@@ -1,7 +1,6 @@
 # netty-webserver
 
-## netty-webserver
-
+## 简介
 netty-webserver 是一个基于[netty](https://github.com/netty/netty)开发的一个http web服务器
 
 ## 使用方法
