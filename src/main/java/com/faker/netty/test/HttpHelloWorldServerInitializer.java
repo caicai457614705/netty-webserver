@@ -15,15 +15,12 @@
  */
 package com.faker.netty.test;
 
-import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
-import io.netty.handler.codec.http.HttpServerKeepAliveHandler;
-import io.netty.handler.codec.http.cors.CorsHandler;
 import io.netty.handler.ssl.SslContext;
 
 public class HttpHelloWorldServerInitializer extends ChannelInitializer<SocketChannel> {
@@ -43,6 +40,6 @@ public class HttpHelloWorldServerInitializer extends ChannelInitializer<SocketCh
         p.addLast(new HttpServerCodec());
         p.addLast(new HttpObjectAggregator(65535));
         p.addLast(new HttpServerExpectContinueHandler());
-        p.addLast(new HttpPostJsonHandler());
+        p.addLast(new HttpRequestHandler(1));
     }
 }

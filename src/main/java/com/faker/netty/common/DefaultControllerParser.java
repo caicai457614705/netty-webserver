@@ -1,12 +1,10 @@
 package com.faker.netty.common;
 
-import com.faker.netty.annotation.HttpMethod;
-import com.faker.netty.annotation.Path;
-import com.faker.netty.annotation.PathParam;
-import com.faker.netty.annotation.QueryParam;
+import com.faker.netty.annotation.*;
 import com.faker.netty.model.MethodMetaData;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
@@ -14,6 +12,7 @@ import java.lang.reflect.Parameter;
  * Created by faker on 18/4/12.
  */
 public class DefaultControllerParser extends AbstractControllerParser {
+
     @Override
     public String parseClass(Class clz) {
         String basePath = "";
@@ -40,9 +39,11 @@ public class DefaultControllerParser extends AbstractControllerParser {
                 Path pathParam = (Path) methodAnnotation;
                 methodPath = pathParam.value();
             }
-            if (methodAnnotation instanceof HttpMethod) {
-                HttpMethod pathParam = (HttpMethod) methodAnnotation;
-                httpMethodPath = pathParam.value();
+            if (methodAnnotation instanceof Get) {
+                httpMethodPath = "get";
+            }
+            if (methodAnnotation instanceof Post) {
+                httpMethodPath = "post";
             }
         }
         url = httpMethodPath + basePath + methodPath;
@@ -53,12 +54,23 @@ public class DefaultControllerParser extends AbstractControllerParser {
     public void parseParam(Method method, MethodMetaData methodMetaData) {
 //            解析方法参数
         Parameter[] parameters = method.getParameters();
-        methodMetaData.setParamsConunt(parameters.length);
-        for (int i = 0; i < parameters.length; i++) {
+        int paramLength = parameters.length;
+        methodMetaData.setParamsConunt(paramLength);
+        for (int i = 0; i < paramLength; i++) {
             Parameter parameter = parameters[i];
             Annotation[] paramAnnotations = parameter.getAnnotations();
-            if (paramAnnotations.length == 0) {
-                methodMetaData.setPostParamClass(parameter.getType());
+            if (paramLength == 1 && paramAnnotations.length == 0) {
+                methodMetaData.setPojoParamClass(parameter.getType());
+                Field[] fields = parameter.getType().getDeclaredFields();
+                for (Field field : fields) {
+                    String fieldName = field.getName();
+                    if (field.isAnnotationPresent(QueryParam.class)) {
+                        methodMetaData.addQueryParam(fieldName, -1);
+                    }
+                    if (field.isAnnotationPresent(FormParam.class)) {
+                        methodMetaData.addFormParam(fieldName, -1);
+                    }
+                }
             } else {
                 for (Annotation paramAnnotation : paramAnnotations) {
                     if (paramAnnotation instanceof PathParam) {
@@ -67,6 +79,9 @@ public class DefaultControllerParser extends AbstractControllerParser {
                     } else if (paramAnnotation instanceof QueryParam) {
                         QueryParam queryParam = (QueryParam) paramAnnotation;
                         methodMetaData.addQueryParam(queryParam.value(), i);
+                    } else if (paramAnnotation instanceof FormParam) {
+                        FormParam formParam = (FormParam) paramAnnotation;
+                        methodMetaData.addFormParam(formParam.value(), i);
                     }
                 }
             }

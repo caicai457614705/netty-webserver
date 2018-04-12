@@ -1,9 +1,6 @@
 package com.faker.netty.controller;
 
-import com.faker.netty.annotation.Controller;
-import com.faker.netty.annotation.HttpMethod;
-import com.faker.netty.annotation.Path;
-import com.faker.netty.annotation.QueryParam;
+import com.faker.netty.annotation.*;
 import com.faker.netty.model.UserInfo;
 
 /**
@@ -13,7 +10,7 @@ import com.faker.netty.model.UserInfo;
 @Path("/user")
 public class UserController {
 
-    @HttpMethod(value = "get")
+    @Get
     @Path("/login")
     public String login(@QueryParam(value = "username") String username, @QueryParam(value = "password") String password) {
         System.out.println("用户名:" + username);
@@ -21,10 +18,23 @@ public class UserController {
         return "success";
     }
 
-    @HttpMethod(value = "post")
+    @Post
     @Path("/update")
     public String updateInfo(UserInfo userInfo) {
+
         return null;
+    }
+
+    @Get
+    @Path("/get")
+    public String getInfo(@PathParam(value = "username") String username) {
+        return username;
+    }
+
+    @Post
+    @Path("/regist")
+    public Integer regist(@FormParam(value = "age")Integer age) {
+        return age;
     }
 
 }
