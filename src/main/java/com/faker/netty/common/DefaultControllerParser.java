@@ -61,27 +61,35 @@ public class DefaultControllerParser extends AbstractControllerParser {
             Annotation[] paramAnnotations = parameter.getAnnotations();
             if (paramLength == 1 && paramAnnotations.length == 0) {
                 methodMetaData.setPojoParamClass(parameter.getType());
-                Field[] fields = parameter.getType().getDeclaredFields();
-                for (Field field : fields) {
-                    String fieldName = field.getName();
-                    if (field.isAnnotationPresent(QueryParam.class)) {
-                        methodMetaData.addQueryParam(fieldName, -1);
-                    }
-                    if (field.isAnnotationPresent(FormParam.class)) {
-                        methodMetaData.addFormParam(fieldName, -1);
-                    }
-                }
+            } else if (paramLength == 1 && parameter.isAnnotationPresent(QueryPOJO.class)) {
+
+//                好像不需要解析field,所以下面都注释掉了
+                methodMetaData.setPojoParamClass(parameter.getType());
+
+//                Field[] fields = parameter.getType().getDeclaredFields();
+//                for (Field field : fields) {
+//                    String fieldName = field.getName();
+//                    methodMetaData.addQueryParam(fieldName, -1, field.getType());
+//                }
+            } else if (paramLength == 1 && parameter.isAnnotationPresent(FormPOJO.class)) {
+                methodMetaData.setPojoParamClass(parameter.getType());
+
+//                Field[] fields = parameter.getType().getDeclaredFields();
+//                for (Field field : fields) {
+//                    String fieldName = field.getName();
+//                    methodMetaData.addFormParam(fieldName, -1, field.getType());
+//                }
             } else {
                 for (Annotation paramAnnotation : paramAnnotations) {
                     if (paramAnnotation instanceof PathParam) {
                         PathParam pathParam = (PathParam) paramAnnotation;
-                        methodMetaData.addPathParam(pathParam.value(), i);
+                        methodMetaData.addPathParam(pathParam.value(), i, parameter.getType());
                     } else if (paramAnnotation instanceof QueryParam) {
                         QueryParam queryParam = (QueryParam) paramAnnotation;
-                        methodMetaData.addQueryParam(queryParam.value(), i);
+                        methodMetaData.addQueryParam(queryParam.value(), i, parameter.getType());
                     } else if (paramAnnotation instanceof FormParam) {
                         FormParam formParam = (FormParam) paramAnnotation;
-                        methodMetaData.addFormParam(formParam.value(), i);
+                        methodMetaData.addFormParam(formParam.value(), i, parameter.getType());
                     }
                 }
             }

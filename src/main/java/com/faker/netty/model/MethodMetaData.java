@@ -13,16 +13,16 @@ public class MethodMetaData {
     private Class returnType;
     private Method method;
     private Object ownerObject;
-    private final Map<String, Integer> queryParamIndexMap;
-    private final Map<String, Integer> pathParamIndexMap;
-    private final Map<String, Integer> formParamIndexMap;
+    private final Map<String, ParamMetaData> queryParamMap;
+    private final Map<String, ParamMetaData> pathParamMap;
+    private final Map<String, ParamMetaData> formParamMap;
     private Class pojoParamClass;
 
     public MethodMetaData(String name) {
         this.name = name;
-        queryParamIndexMap = new HashMap<String, Integer>();
-        pathParamIndexMap = new HashMap<String, Integer>();
-        formParamIndexMap = new HashMap<>();
+        queryParamMap = new HashMap<String, ParamMetaData>();
+        pathParamMap = new HashMap<String, ParamMetaData>();
+        formParamMap = new HashMap<String, ParamMetaData>();
         pojoParamClass = null;
     }
 
@@ -35,18 +35,36 @@ public class MethodMetaData {
     }
 
 
-    public void addQueryParam(String name, Integer index) {
-        this.queryParamIndexMap.put(name, index);
+    public void addQueryParam(String name, Integer index, Class clz) {
+        ParamMetaData paramMetaData = new ParamMetaData(name, index, clz);
+        queryParamMap.put(name, paramMetaData);
+
     }
 
-    public void addFormParam(String name, Integer index) {
-        this.formParamIndexMap.put(name, index);
+    public void addFormParam(String name, Integer index, Class clz) {
+        ParamMetaData paramMetaData = new ParamMetaData(name, index, clz);
+        formParamMap.put(name, paramMetaData);
+
     }
 
-    public void addPathParam(String name, Integer index) {
-        this.pathParamIndexMap.put(name, index);
+
+    public void addPathParam(String name, Integer index, Class clz) {
+        ParamMetaData paramMetaData = new ParamMetaData(name, index, clz);
+        pathParamMap.put(name, paramMetaData);
     }
 
+
+    public Map<String, ParamMetaData> getQueryParamMap() {
+        return queryParamMap;
+    }
+
+    public Map<String, ParamMetaData> getPathParamMap() {
+        return pathParamMap;
+    }
+
+    public Map<String, ParamMetaData> getFormParamMap() {
+        return formParamMap;
+    }
 
     public Class getPojoParamClass() {
         return pojoParamClass;
@@ -54,18 +72,6 @@ public class MethodMetaData {
 
     public void setPojoParamClass(Class pojoParamClass) {
         this.pojoParamClass = pojoParamClass;
-    }
-
-    public Map<String, Integer> getQueryParamIndexMap() {
-        return queryParamIndexMap;
-    }
-
-    public Map<String, Integer> getPathParamIndexMap() {
-        return pathParamIndexMap;
-    }
-
-    public Map<String, Integer> getFormParamIndexMap() {
-        return formParamIndexMap;
     }
 
     public Class getReturnType() {

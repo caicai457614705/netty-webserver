@@ -2,6 +2,7 @@ package com.faker.netty.controller;
 
 import com.faker.netty.annotation.*;
 import com.faker.netty.model.UserInfo;
+import com.faker.netty.model.UserQueryParam;
 
 /**
  * Created by faker on 18/4/11.
@@ -15,6 +16,14 @@ public class UserController {
     public String login(@QueryParam(value = "username") String username, @QueryParam(value = "password") String password) {
         System.out.println("用户名:" + username);
         System.out.println("密码 :" + password);
+        return "success";
+    }
+
+    @Get
+    @Path("/query")
+    public String login(@QueryPOJO UserQueryParam userQueryParam) {
+        System.out.println("用户名:" + userQueryParam.getName());
+        System.out.println("年龄 :" + userQueryParam.getAge());
         return "success";
     }
 
@@ -33,7 +42,7 @@ public class UserController {
 
     @Post
     @Path("/regist")
-    public Integer regist(@FormParam(value = "age")Integer age) {
+    public Integer regist(@FormParam(value = "age") Integer age) {
         return age;
     }
 

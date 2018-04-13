@@ -1,7 +1,11 @@
 package com.faker.netty.test;
 
 
-import com.faker.netty.util.StringUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.faker.netty.enums.ParamTypeEnum;
+import com.faker.netty.model.MoreResult;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by faker on 18/4/12.
@@ -9,7 +13,8 @@ import com.faker.netty.util.StringUtil;
 public class TempTest {
 
     public static void main(String[] args) {
-        String s = "POST";
-        System.out.println(StringUtil.capitalize(s));
+        System.out.println("Int".equals(ParamTypeEnum.Int.toString()));
     }
+
+
 }

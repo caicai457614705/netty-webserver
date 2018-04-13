@@ -1,15 +1,26 @@
 package com.faker.netty.model;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by faker on 18/4/12.
  */
 public class ParamMetaData {
+    private String name;
     private int index;
     private Class type;
+
+    public ParamMetaData(String name, int index, Class clz) {
+        this.name = name;
+        this.index = index;
+        this.type = clz;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public int getIndex() {
         return index;
