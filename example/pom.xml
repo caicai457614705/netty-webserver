@@ -16,6 +16,7 @@
             <groupId>com.faker.netty</groupId>
             <artifactId>server-core</artifactId>
         </dependency>
+
     </dependencies>
 
 </project>
