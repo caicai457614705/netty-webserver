@@ -1,13 +1,8 @@
 package com.faker.netty.common;
 
-import com.faker.netty.annotation.Path;
-import com.faker.netty.annotation.PathParam;
-import com.faker.netty.annotation.QueryParam;
 import com.faker.netty.model.MethodMetaData;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +20,7 @@ public abstract class AbstractControllerParser {
     }
 
     public void parseController(Class clz) {
-        List<Class> parseTargetList = AnnotationSearcher.listClzByAnnotation(clz);
+        List<Class> parseTargetList = AnnotationScanner.listClzByAnnotation(clz);
         for (Class targetClass : parseTargetList) {
             String basePath = this.parseClass(targetClass);
             //        解析方法
