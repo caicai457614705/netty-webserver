@@ -1,9 +1,10 @@
-package com.faker.netty.common;
+package com.faker.netty.core.processor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.faker.netty.annotation.Controller;
-import com.faker.netty.enums.ParamTypeEnum;
+import com.faker.netty.core.parser.AbstractControllerParser;
+import com.faker.netty.core.parser.DefaultControllerParser;
 import com.faker.netty.model.MethodMetaData;
 import com.faker.netty.model.ParamMetaData;
 import com.faker.netty.util.HeaderUtil;
@@ -33,6 +34,9 @@ import java.util.Map;
  */
 public class HttpProcessor {
 
+    private static final String GET = "get";
+    private static final String POST = "post";
+
     private AbstractControllerParser parser;
 
     public HttpProcessor(Integer parserType) {
@@ -43,7 +47,7 @@ public class HttpProcessor {
     }
 
     public void processJsonRequest(String url, FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
-        MethodMetaData methodMetaData = parser.searchUrl(url);
+        MethodMetaData methodMetaData = parser.searchUrl(POST, url);
 
         String jsonContent = fullHttpRequest.content().toString(Charset.defaultCharset());
         Class pojoClass = methodMetaData.getPojoParamClass();
@@ -54,7 +58,7 @@ public class HttpProcessor {
 
     public void processQueryRequest(String url, FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         Map<String, String> paramMap = parseQueryParam(fullHttpRequest);
-        MethodMetaData methodMetaData = parser.searchUrl(url);
+        MethodMetaData methodMetaData = parser.searchUrl(GET, url);
         if (methodMetaData != null) {
             if (methodMetaData.getPojoParamClass() != null) {
                 processPojoRequest(methodMetaData, paramMap, channelHandlerContext);
@@ -75,7 +79,7 @@ public class HttpProcessor {
     }
 
     public void processFormRequest(String url, FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
-        MethodMetaData methodMetaData = parser.searchUrl(url);
+        MethodMetaData methodMetaData = parser.searchUrl(POST, url);
 
         Map<String, String> paramMap = parseFormParam(fullHttpRequest);
         if (paramMap != null) {
@@ -100,13 +104,13 @@ public class HttpProcessor {
     }
 
     public void processPathRequest(String url, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
-        MethodMetaData methodMetaData = parser.searchUrl(url);
+        MethodMetaData methodMetaData = parser.searchUrl(GET, url);
         if (methodMetaData != null) {
             Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject());
             processResult(object, channelHandlerContext);
         } else {
             int index = url.lastIndexOf("/");
-            MethodMetaData queryRequestMetaData = parser.searchUrl(url.substring(0, index));
+            MethodMetaData queryRequestMetaData = parser.searchUrl(GET, url.substring(0, index));
             if (queryRequestMetaData != null) {
                 Map<String, ParamMetaData> pathMap = queryRequestMetaData.getPathParamMap();
                 if (pathMap.isEmpty()) {

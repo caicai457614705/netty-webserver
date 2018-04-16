@@ -1,11 +1,15 @@
-package com.faker.netty.test;
+package com.faker.netty.core.handler;
 
-import com.faker.netty.common.HttpProcessor;
+import com.faker.netty.core.processor.HttpProcessor;
 import com.faker.netty.util.HeaderUtil;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.HttpMethod;
+import io.netty.handler.codec.http.*;
+import io.netty.util.CharsetUtil;
+
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * Created by faker on 18/4/11.
@@ -22,7 +26,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws Exception {
         //TODO:校验url 合法性
         HttpMethod method = fullHttpRequest.method();
-        String url = method.name().toLowerCase() + fullHttpRequest.uri();
+        String url = fullHttpRequest.uri();
 
         if (method.equals(HttpMethod.GET)) {
             int queryIndex = url.indexOf("?");
@@ -54,9 +58,16 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
-        ctx.close();
+        sendError(ctx, HttpResponseStatus.BAD_REQUEST, cause.getMessage());
     }
 
+    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, String msg) {
+        FullHttpResponse response = new DefaultFullHttpResponse(
+                HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + msg + "\r\n", CharsetUtil.UTF_8));
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
+
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
 
 }
 

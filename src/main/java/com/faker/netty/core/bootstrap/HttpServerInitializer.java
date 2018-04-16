@@ -13,8 +13,9 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.faker.netty.test;
+package com.faker.netty.core.bootstrap;
 
+import com.faker.netty.core.handler.HttpRequestHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -23,11 +24,11 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.ssl.SslContext;
 
-public class HttpHelloWorldServerInitializer extends ChannelInitializer<SocketChannel> {
+public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
 
-    public HttpHelloWorldServerInitializer(SslContext sslCtx) {
+    public HttpServerInitializer(SslContext sslCtx) {
         this.sslCtx = sslCtx;
     }
 

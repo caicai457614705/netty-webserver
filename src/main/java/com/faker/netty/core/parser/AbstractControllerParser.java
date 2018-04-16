@@ -1,5 +1,7 @@
-package com.faker.netty.common;
+package com.faker.netty.core.parser;
 
+import com.faker.netty.core.scanner.AnnotationScanner;
+import com.faker.netty.exceptions.UrlNotFoundException;
 import com.faker.netty.model.MethodMetaData;
 
 import java.lang.reflect.Method;
@@ -14,9 +16,14 @@ public abstract class AbstractControllerParser {
 
     private final Map<String, MethodMetaData> urlMap = new HashMap<>();
 
-
-    public MethodMetaData searchUrl(String url) {
-        return urlMap.get(url);
+    public MethodMetaData searchUrl(String method, String url) {
+        String methodUrl = method + url;
+        MethodMetaData methodMetaData = urlMap.get(methodUrl);
+        if (methodMetaData != null) {
+            return methodMetaData;
+        } else {
+            throw new UrlNotFoundException(url, method);
+        }
     }
 
     public void parseController(Class clz) {

@@ -1,10 +1,9 @@
-package com.faker.netty.common;
+package com.faker.netty.core.parser;
 
 import com.faker.netty.annotation.*;
 import com.faker.netty.model.MethodMetaData;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 

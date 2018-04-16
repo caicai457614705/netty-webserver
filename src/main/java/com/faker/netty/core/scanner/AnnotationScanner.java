@@ -1,4 +1,4 @@
-package com.faker.netty.common;
+package com.faker.netty.core.scanner;
 
 import java.io.File;
 import java.lang.annotation.Annotation;

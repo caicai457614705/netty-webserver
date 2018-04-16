@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package com.faker.netty.test;
+package com.faker.netty.core.bootstrap;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -31,7 +31,7 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
  * An HTTP server that sends back the content of the received HTTP request
  * in a pretty plaintext form.
  */
-public final class HttpHelloWorldServer {
+public final class HttpServer {
 
     static final boolean SSL = System.getProperty("ssl") != null;
     static final int PORT = Integer.parseInt(System.getProperty("port", SSL? "8443" : "8081"));
@@ -55,7 +55,7 @@ public final class HttpHelloWorldServer {
             b.group(bossGroup, workerGroup)
              .channel(NioServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new HttpHelloWorldServerInitializer(sslCtx));
+             .childHandler(new HttpServerInitializer(sslCtx));
 
             Channel ch = b.bind(PORT).sync().channel();
 
