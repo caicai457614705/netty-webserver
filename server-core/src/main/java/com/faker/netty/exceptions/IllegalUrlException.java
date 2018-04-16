@@ -7,6 +7,7 @@ public class IllegalUrlException extends RuntimeException {
     private static final long serialVersionUID = -8822762738624698730L;
 
     public IllegalUrlException() {
+        super();
     }
 
     public IllegalUrlException(String message) {
