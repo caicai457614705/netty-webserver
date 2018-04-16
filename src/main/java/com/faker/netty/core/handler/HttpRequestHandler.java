@@ -61,7 +61,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         sendError(ctx, HttpResponseStatus.BAD_REQUEST, cause.getMessage());
     }
 
-    private static void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, String msg) {
+    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status, String msg) {
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HTTP_1_1, status, Unpooled.copiedBuffer("Failure: " + msg + "\r\n", CharsetUtil.UTF_8));
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
