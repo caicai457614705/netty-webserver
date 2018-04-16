@@ -7,7 +7,6 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
-@Documented
 public @interface FormParam {
     String value();
 }

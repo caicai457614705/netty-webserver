@@ -6,7 +6,6 @@ import java.lang.annotation.*;
  * Created by faker on 18/4/11.
  */
 
-@Documented
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Controller {
