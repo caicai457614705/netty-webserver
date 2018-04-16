@@ -31,15 +31,26 @@ import io.netty.handler.ssl.util.SelfSignedCertificate;
  * An HTTP server that sends back the content of the received HTTP request
  * in a pretty plaintext form.
  */
-public final class HttpServer {
+public class HttpStarter {
 
-    static final boolean SSL = System.getProperty("ssl") != null;
-    static final int PORT = Integer.parseInt(System.getProperty("port", SSL? "8443" : "8081"));
+    private boolean ssl = System.getProperty("ssl") != null;
+    private int port = Integer.parseInt(System.getProperty("port", ssl ? "8443" : "8081"));
 
-    public static void main(String[] args) throws Exception {
-        // Configure SSL.
+    public HttpStarter() {
+    }
+
+    public HttpStarter(int port) {
+        this.port = port;
+    }
+
+    public HttpStarter(int port, boolean ssl) {
+        this.port = port;
+        this.ssl = ssl;
+    }
+
+    public void start() throws Exception {
         final SslContext sslCtx;
-        if (SSL) {
+        if (ssl) {
             SelfSignedCertificate ssc = new SelfSignedCertificate();
             sslCtx = SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build();
         } else {
@@ -53,19 +64,20 @@ public final class HttpServer {
             ServerBootstrap b = new ServerBootstrap();
             b.option(ChannelOption.SO_BACKLOG, 1024);
             b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
-             .handler(new LoggingHandler(LogLevel.INFO))
-             .childHandler(new HttpServerInitializer(sslCtx));
+                    .channel(NioServerSocketChannel.class)
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .childHandler(new HttpStarterInitializer(sslCtx));
 
-            Channel ch = b.bind(PORT).sync().channel();
+            Channel ch = b.bind(port).sync().channel();
 
             System.err.println("Open your web browser and navigate to " +
-                    (SSL? "https" : "http") + "://127.0.0.1:" + PORT + '/');
+                    (ssl ? "https" : "http") + "://127.0.0.1:" + port + '/');
 
             ch.closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+
     }
 }

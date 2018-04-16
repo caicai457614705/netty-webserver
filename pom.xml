@@ -6,35 +6,44 @@
 
     <groupId>com.faker.netty</groupId>
     <artifactId>netty-webserver</artifactId>
+    <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>server-core</module>
+        <module>example</module>
+    </modules>
 
     <properties>
         <netty.version>4.1.22.Final</netty.version>
+        <fastjson.version>1.2.29</fastjson.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.faker.netty</groupId>
+                <artifactId>server-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.faker.netty</groupId>
+                <artifactId>example</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${netty.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
-
-    <dependencies>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.29</version>
-        </dependency>
-    </dependencies>
 
     <build>
         <plugins>

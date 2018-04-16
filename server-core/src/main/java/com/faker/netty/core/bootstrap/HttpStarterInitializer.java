@@ -24,11 +24,11 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.HttpServerExpectContinueHandler;
 import io.netty.handler.ssl.SslContext;
 
-public class HttpServerInitializer extends ChannelInitializer<SocketChannel> {
+public class HttpStarterInitializer extends ChannelInitializer<SocketChannel> {
 
     private final SslContext sslCtx;
 
-    public HttpServerInitializer(SslContext sslCtx) {
+    public HttpStarterInitializer(SslContext sslCtx) {
         this.sslCtx = sslCtx;
     }
 

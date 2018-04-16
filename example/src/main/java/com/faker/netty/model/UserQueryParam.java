@@ -1,6 +1,5 @@
 package com.faker.netty.model;
 
-import com.faker.netty.annotation.QueryPOJO;
 
 /**
  * Created by faker on 18/4/13.
