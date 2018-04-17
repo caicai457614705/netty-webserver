@@ -4,7 +4,10 @@
 netty-webserver 是一个基于[netty](https://github.com/netty/netty)开发的一个http web服务器
 
 ## 使用方法
-#### 1.导入maven依赖
+#### 1.下载源码, 本地构建, 导入maven依赖
+ - git clone git@github.com:caicai457614705/netty-webserver.git
+ - 进入跟目录 mvn install
+ - 导入如下依赖:
 ```
     <groupId>com.faker.netty</groupId>
     <artifactId>server-core</artifactId>
