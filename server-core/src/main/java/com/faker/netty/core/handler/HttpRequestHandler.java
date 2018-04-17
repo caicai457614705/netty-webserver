@@ -1,5 +1,11 @@
 package com.faker.netty.core.handler;
 
+import com.faker.netty.annotation.Controller;
+import com.faker.netty.core.bootstrap.HttpStarterInitializer;
+import com.faker.netty.core.common.ControllerRegistryBean;
+import com.faker.netty.core.parser.ControllerParser;
+import com.faker.netty.core.parser.DefaultControllerParser;
+import com.faker.netty.core.parser.SpringControllerParser;
 import com.faker.netty.core.processor.HttpProcessor;
 import com.faker.netty.util.HeaderUtil;
 import io.netty.buffer.Unpooled;
@@ -8,6 +14,8 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.CharsetUtil;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
@@ -19,8 +27,8 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
 
     private HttpProcessor httpProcessor;
 
-    public HttpRequestHandler(Integer parserType) {
-        httpProcessor = new HttpProcessor(parserType);
+    public HttpRequestHandler(ControllerParser parser) {
+        httpProcessor = new HttpProcessor(parser);
     }
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws Exception {
@@ -67,6 +75,20 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain; charset=UTF-8");
 
         ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
+    }
+
+    public static HttpRequestHandler getHttpHandler() {
+        HttpRequestHandler requestHandler;
+
+        if (HttpStarterInitializer.class.getResource("/spring-context.xml") != null) {
+            ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-context.xml");
+            ControllerRegistryBean controllerRegistryBean = (ControllerRegistryBean) applicationContext.getBean("controllerRegistryBean");
+            requestHandler = new HttpRequestHandler(controllerRegistryBean.getParser());
+        } else {
+            DefaultControllerParser defaultControllerParser = new DefaultControllerParser();
+            requestHandler = new HttpRequestHandler(defaultControllerParser);
+        }
+        return requestHandler;
     }
 
 }

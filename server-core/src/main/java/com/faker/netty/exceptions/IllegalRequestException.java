@@ -6,11 +6,11 @@ package com.faker.netty.exceptions;
 public class IllegalRequestException extends RuntimeException {
     private static final long serialVersionUID = -734912569499111418L;
 
-    public IllegalRequestException() {
-        super();
+    public IllegalRequestException(String msg) {
+        super(msg);
     }
 
-    public IllegalRequestException(String message) {
-        super(message);
+    public IllegalRequestException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

@@ -1,4 +1,4 @@
-package com.faker.netty.core.scanner;
+package com.faker.netty.core.common;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -13,29 +13,6 @@ public class AnnotationScanner {
     public static final List<String> clzCompleteNameList = new ArrayList<String>();
     public static final String basePath = AnnotationScanner.class.getResource("/").getPath();
     private static boolean initFlag = false;
-
-    public static List<String> listClzNameByAnnotation(Class clz) {
-        List<String> classList = new ArrayList<String>();
-        if (!initFlag) {
-            searchFiles(new File(basePath));
-        }
-
-        try {
-            for (String className : clzCompleteNameList) {
-                Class templateClass = Class.forName(className);
-                Annotation controller = templateClass.getAnnotation(clz);
-                if (controller != null) {
-                    classList.add(className);
-                }
-            }
-
-        } catch (ClassNotFoundException e) {
-            System.out.println("ClassNotFound");
-            e.printStackTrace();
-        }
-
-        return classList;
-    }
 
     public static List<Class> listClzByAnnotation(Class clz) {
         List<Class> classList = new ArrayList<Class>();

@@ -12,6 +12,7 @@ public class MethodMetaData {
     private String name;
     private Class returnType;
     private Method method;
+    private String ownerClassName;
     private Object ownerObject;
     private final Map<String, ParamMetaData> queryParamMap;
     private final Map<String, ParamMetaData> pathParamMap;
@@ -24,6 +25,10 @@ public class MethodMetaData {
         pathParamMap = new HashMap<String, ParamMetaData>();
         formParamMap = new HashMap<String, ParamMetaData>();
         pojoParamClass = null;
+    }
+
+    public void setOwnerClassName(String ownerClassName) {
+        this.ownerClassName = ownerClassName;
     }
 
     public String getName() {

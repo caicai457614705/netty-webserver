@@ -2,9 +2,8 @@ package com.faker.netty.core.processor;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.faker.netty.annotation.Controller;
-import com.faker.netty.core.parser.AbstractControllerParser;
-import com.faker.netty.core.parser.DefaultControllerParser;
+import com.faker.netty.core.parser.ControllerParser;
+import com.faker.netty.exceptions.InitializationException;
 import com.faker.netty.model.MethodMetaData;
 import com.faker.netty.model.ParamMetaData;
 import com.faker.netty.util.HeaderUtil;
@@ -37,12 +36,14 @@ public class HttpProcessor {
     private static final String GET = "get";
     private static final String POST = "post";
 
-    private AbstractControllerParser parser;
+    private ControllerParser parser;
 
-    public HttpProcessor(Integer parserType) {
-        if (parserType == 1) {
-            parser = new DefaultControllerParser();
-            parser.parseController(Controller.class);
+    public HttpProcessor(ControllerParser parser) {
+        if (parser != null) {
+            this.parser = parser;
+        } else {
+            throw new InitializationException("ControllerParser can't be null");
+
         }
     }
 

@@ -5,12 +5,11 @@ package com.faker.netty.exceptions;
  */
 public class IllegalUrlException extends RuntimeException {
     private static final long serialVersionUID = -8822762738624698730L;
-
-    public IllegalUrlException() {
-        super();
+    public IllegalUrlException(String msg) {
+        super(msg);
     }
 
-    public IllegalUrlException(String message) {
-        super(message);
+    public IllegalUrlException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

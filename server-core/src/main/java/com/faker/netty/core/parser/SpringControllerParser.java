@@ -1,40 +1,44 @@
 package com.faker.netty.core.parser;
 
-import com.faker.netty.annotation.*;
+import com.faker.netty.annotation.Controller;
 import com.faker.netty.core.common.AnnotationScanner;
 import com.faker.netty.model.MethodMetaData;
+import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
- * Created by faker on 18/4/12.
+ * Created by faker on 18/4/17.
  */
-public class DefaultControllerParser extends AbstractControllerParser {
+public class SpringControllerParser extends AbstractControllerParser {
 
-    public DefaultControllerParser() {
+    private final ApplicationContext ctx;
+
+    private List<Class> controllerList;
+
+    public SpringControllerParser(ApplicationContext ctx) {
         parseController();
+        this.ctx = ctx;
     }
 
+    //    解析spring,从容器中获取对象实例
     @Override
     public void parseController() {
         List<Class> parseTargetList = AnnotationScanner.listClzByAnnotation(Controller.class);
+        this.controllerList = parseTargetList;
         for (Class targetClass : parseTargetList) {
             String basePath = this.parseClass(targetClass);
             //        解析方法
             Method[] methods = targetClass.getDeclaredMethods();
-            Object object = null;
-            try {
-                object = targetClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
             for (Method method : methods) {
 //            获取方法名字,构造metadata
                 MethodMetaData methodMetaData = new MethodMetaData(method.getName());
-                methodMetaData.setOwnerObject(object);
                 methodMetaData.setMethod(method);
+                methodMetaData.setOwnerClassName(targetClass.getSimpleName());
                 methodMetaData.setReturnType(method.getReturnType());
                 String url = this.parseMethodUrl(method, basePath);
                 this.parseParam(method, methodMetaData);
@@ -44,4 +48,11 @@ public class DefaultControllerParser extends AbstractControllerParser {
 
     }
 
+    public List<Class> getControllerList() {
+        return controllerList;
+    }
+
+    public ApplicationContext getCtx() {
+        return ctx;
+    }
 }
