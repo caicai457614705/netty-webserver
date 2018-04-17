@@ -28,7 +28,11 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
     private HttpProcessor httpProcessor;
 
     public HttpRequestHandler(ControllerParser parser) {
-        httpProcessor = new HttpProcessor(parser);
+        httpProcessor = new HttpProcessor(parser, false);
+    }
+
+    public HttpRequestHandler(ControllerParser parser, boolean useSpring) {
+        httpProcessor = new HttpProcessor(parser, useSpring);
     }
 
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, FullHttpRequest fullHttpRequest) throws Exception {
@@ -83,7 +87,7 @@ public class HttpRequestHandler extends SimpleChannelInboundHandler<FullHttpRequ
         if (HttpStarterInitializer.class.getResource("/spring-context.xml") != null) {
             ApplicationContext applicationContext = new ClassPathXmlApplicationContext("spring-context.xml");
             ControllerRegistryBean controllerRegistryBean = (ControllerRegistryBean) applicationContext.getBean("controllerRegistryBean");
-            requestHandler = new HttpRequestHandler(controllerRegistryBean.getParser());
+            requestHandler = new HttpRequestHandler(controllerRegistryBean.getParser(), true);
         } else {
             DefaultControllerParser defaultControllerParser = new DefaultControllerParser();
             requestHandler = new HttpRequestHandler(defaultControllerParser);

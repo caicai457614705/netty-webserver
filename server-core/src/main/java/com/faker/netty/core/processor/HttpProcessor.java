@@ -3,6 +3,7 @@ package com.faker.netty.core.processor;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.faker.netty.core.parser.ControllerParser;
+import com.faker.netty.core.parser.SpringControllerParser;
 import com.faker.netty.exceptions.InitializationException;
 import com.faker.netty.model.MethodMetaData;
 import com.faker.netty.model.ParamMetaData;
@@ -14,6 +15,7 @@ import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.multipart.Attribute;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -38,9 +40,17 @@ public class HttpProcessor {
 
     private ControllerParser parser;
 
-    public HttpProcessor(ControllerParser parser) {
+    private boolean useSpring;
+
+    private ApplicationContext applicationContext;
+
+    public HttpProcessor(ControllerParser parser, boolean useSpring) {
+        this.useSpring = useSpring;
         if (parser != null) {
             this.parser = parser;
+            if (parser instanceof SpringControllerParser) {
+                applicationContext = ((SpringControllerParser) parser).getCtx();
+            }
         } else {
             throw new InitializationException("ControllerParser can't be null");
 
@@ -53,8 +63,8 @@ public class HttpProcessor {
         String jsonContent = fullHttpRequest.content().toString(Charset.defaultCharset());
         Class pojoClass = methodMetaData.getPojoParamClass();
         Object jsonParam = JSONObject.toJavaObject(JSON.parseObject(jsonContent), pojoClass);
-        Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), jsonParam);
-        processResult(object, channelHandlerContext);
+        Object result = invoke(methodMetaData, jsonParam);
+        processResult(result, channelHandlerContext);
     }
 
     public void processQueryRequest(String url, FullHttpRequest fullHttpRequest, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -72,8 +82,8 @@ public class HttpProcessor {
                         queryParams[paramMetaData.getIndex()] = convertToType(paramMap.get(key), paramMetaData.getType());
                     }
                 }
-                Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), queryParams);
-                processResult(object, channelHandlerContext);
+                Object result = invoke(methodMetaData, queryParams);
+                processResult(result, channelHandlerContext);
             }
 
         }
@@ -97,8 +107,8 @@ public class HttpProcessor {
                             formParams[paramMetaData.getIndex()] = convertToType(paramMap.get(key), paramMetaData.getType());
                         }
                     }
-                    Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), formParams);
-                    processResult(object, channelHandlerContext);
+                    Object result = invoke(methodMetaData, formParams);
+                    processResult(result, channelHandlerContext);
                 }
             }
         }
@@ -107,8 +117,8 @@ public class HttpProcessor {
     public void processPathRequest(String url, ChannelHandlerContext channelHandlerContext) throws InvocationTargetException, IllegalAccessException, InstantiationException {
         MethodMetaData methodMetaData = parser.searchUrl(GET, url);
         if (methodMetaData != null) {
-            Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject());
-            processResult(object, channelHandlerContext);
+            Object result = invoke(methodMetaData);
+            processResult(result, channelHandlerContext);
         } else {
             int index = url.lastIndexOf("/");
             MethodMetaData queryRequestMetaData = parser.searchUrl(GET, url.substring(0, index));
@@ -120,8 +130,10 @@ public class HttpProcessor {
                     String pathParam = url.substring(index + 1);
                     String firstKey = pathMap.keySet().iterator().next();
                     ParamMetaData paramMetaData = pathMap.get(firstKey);
-                    Object object = queryRequestMetaData.getMethod().invoke(queryRequestMetaData.getOwnerObject(), convertToType(pathParam, paramMetaData.getType()));
-                    processResult(object, channelHandlerContext);
+
+                    Object result = invoke(queryRequestMetaData, convertToType(pathParam, paramMetaData.getType()));
+                    processResult(result, channelHandlerContext);
+
                 }
             }
         }
@@ -136,8 +148,9 @@ public class HttpProcessor {
                 field.set(paramInstance, convertToType(param, field.getType()));
             }
         }
-        Object object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), paramInstance);
-        processResult(object, channelHandlerContext);
+
+        Object result = invoke(methodMetaData, paramInstance);
+        processResult(result, channelHandlerContext);
     }
 
 
@@ -175,6 +188,17 @@ public class HttpProcessor {
         }
 
         return paramMap;
+    }
+
+    private Object invoke(MethodMetaData methodMetaData, Object... args) throws InvocationTargetException, IllegalAccessException {
+        Object object = null;
+        if (useSpring) {
+            object = methodMetaData.getMethod().invoke(applicationContext.getBean(methodMetaData.getName()), args);
+
+        } else {
+            object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), args);
+        }
+        return object;
     }
 
     private void processResult(Object object, ChannelHandlerContext channelHandlerContext) throws IllegalAccessException, InstantiationException {
