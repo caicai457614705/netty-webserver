@@ -8,7 +8,7 @@ import com.faker.netty.core.bootstrap.HttpStarter;
 public class MyStarter {
 
     public static void main(String[] args) throws Exception {
-        HttpStarter httpStarter = new HttpStarter();
+        HttpStarter httpStarter = new HttpStarter(8082);
         httpStarter.start();
     }
 }

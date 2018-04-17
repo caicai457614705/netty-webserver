@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by faker on 18/4/11.
  */
-@Controller(name = "myController")
+@Controller()
 @Path("/user")
 public class UserController {
 

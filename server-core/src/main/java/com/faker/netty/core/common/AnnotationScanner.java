@@ -10,8 +10,8 @@ import java.util.List;
  */
 public class AnnotationScanner {
 
-    public static final List<String> clzCompleteNameList = new ArrayList<String>();
-    public static final String basePath = AnnotationScanner.class.getResource("/").getPath();
+    private static final List<String> clzCompleteNameList = new ArrayList<String>();
+    private static final String basePath = AnnotationScanner.class.getResource("/").getPath();
     private static boolean initFlag = false;
 
     public static List<Class> listClzByAnnotation(Class clz) {
@@ -45,7 +45,7 @@ public class AnnotationScanner {
             }
         } else {
             String fileName = file.getAbsolutePath();
-            if (!fileName.contains("$")&&fileName.endsWith(".class")) {
+            if (!fileName.contains("$") && fileName.endsWith(".class")) {
                 clzCompleteNameList.add(fileName.replace(basePath, "").replace("/", ".").replace(".class", ""));
             }
         }

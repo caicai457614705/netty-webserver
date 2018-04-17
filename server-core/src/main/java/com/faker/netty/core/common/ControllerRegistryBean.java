@@ -34,16 +34,18 @@ public class ControllerRegistryBean implements ApplicationContextAware, BeanDefi
 
     @Override
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry beanDefinitionRegistry) throws BeansException {
-        // 需要被代理的接口
+        //构建SpringParser去解析Controller, 类的simpleName
         SpringControllerParser springControllerParser = new SpringControllerParser(ctx);
         List<Class> controllerClassList = springControllerParser.getControllerList();
         parser = springControllerParser;
+
+//        像容器注册controller的bean
         for (Class clz : controllerClassList) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(clz);
             GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
             definition.setBeanClass(clz);
             definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
-            // 注册bean名,一般为类名首字母小写
+            // 注册bean
             beanDefinitionRegistry.registerBeanDefinition(clz.getSimpleName(), definition);
         }
 
