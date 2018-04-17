@@ -193,8 +193,7 @@ public class HttpProcessor {
     private Object invoke(MethodMetaData methodMetaData, Object... args) throws InvocationTargetException, IllegalAccessException {
         Object object = null;
         if (useSpring) {
-            object = methodMetaData.getMethod().invoke(applicationContext.getBean(methodMetaData.getName()), args);
-
+            object = methodMetaData.getMethod().invoke(applicationContext.getBean(methodMetaData.getOwnerClassName()), args);
         } else {
             object = methodMetaData.getMethod().invoke(methodMetaData.getOwnerObject(), args);
         }

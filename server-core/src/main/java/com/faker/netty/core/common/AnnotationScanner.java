@@ -45,7 +45,7 @@ public class AnnotationScanner {
             }
         } else {
             String fileName = file.getAbsolutePath();
-            if (!fileName.contains("$")) {
+            if (!fileName.contains("$")&&fileName.endsWith(".class")) {
                 clzCompleteNameList.add(fileName.replace(basePath, "").replace("/", ".").replace(".class", ""));
             }
         }

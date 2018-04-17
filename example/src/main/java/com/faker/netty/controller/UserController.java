@@ -1,8 +1,10 @@
 package com.faker.netty.controller;
 
+import com.faker.netty.UserService;
 import com.faker.netty.annotation.*;
 import com.faker.netty.model.UserInfo;
 import com.faker.netty.model.UserQueryParam;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by faker on 18/4/11.
@@ -11,11 +13,15 @@ import com.faker.netty.model.UserQueryParam;
 @Path("/user")
 public class UserController {
 
+    @Autowired
+    private UserService userService;
+
     @Get
     @Path("/login")
     public String login(@QueryParam(value = "username") String username, @QueryParam(value = "password") String password) {
         System.out.println("用户名:" + username);
         System.out.println("密码 :" + password);
+        userService.say();
         return "success";
     }
 

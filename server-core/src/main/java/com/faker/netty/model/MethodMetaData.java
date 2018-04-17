@@ -39,6 +39,9 @@ public class MethodMetaData {
         this.name = name;
     }
 
+    public String getOwnerClassName() {
+        return ownerClassName;
+    }
 
     public void addQueryParam(String name, Integer index, Class clz) {
         ParamMetaData paramMetaData = new ParamMetaData(name, index, clz);

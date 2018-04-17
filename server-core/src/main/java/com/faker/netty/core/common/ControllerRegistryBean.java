@@ -37,11 +37,11 @@ public class ControllerRegistryBean implements ApplicationContextAware, BeanDefi
         // 需要被代理的接口
         SpringControllerParser springControllerParser = new SpringControllerParser(ctx);
         List<Class> controllerClassList = springControllerParser.getControllerList();
-
+        parser = springControllerParser;
         for (Class clz : controllerClassList) {
             BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(clz);
             GenericBeanDefinition definition = (GenericBeanDefinition) builder.getRawBeanDefinition();
-            definition.setBeanClass(SpringService.class);
+            definition.setBeanClass(clz);
             definition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_TYPE);
             // 注册bean名,一般为类名首字母小写
             beanDefinitionRegistry.registerBeanDefinition(clz.getSimpleName(), definition);
